@@ -1,7 +1,7 @@
 #include "m2.h"
 #include "skin.h"
-#include "script.h"
 #include "file.h"
+#include "config.h"
 
 #include "thread_pool.hpp"
 #include <StormLib.h>
@@ -33,15 +33,15 @@ void exit_message(std::string const& message, int code)
 void extract_files()
 {
 		std::cout << "No existing extracts directory, extracting all models and skins...\n";
-		fs::path cpath = fs::path(CLIENT_PATH);
+		fs::path datapath = fs::path(CLIENT_PATH) / "Data";
 		std::vector<fs::path> mpqs = {
-				cpath / "Data" / "common.MPQ",
-				cpath / "Data" / "common-2.MPQ",
-				cpath / "Data" / "expansion.MPQ",
-				cpath / "Data" / "lichking.MPQ",
-				cpath / "Data" / "patch.MPQ",
-				cpath / "Data" / "patch-2.MPQ",
-				cpath / "Data" / "patch-3.MPQ",
+				datapath / "common.MPQ",
+				datapath / "common-2.MPQ",
+				datapath / "expansion.MPQ",
+				datapath / "lichking.MPQ",
+				datapath / "patch.MPQ",
+				datapath / "patch-2.MPQ",
+				datapath / "patch-3.MPQ",
 		};
 
 		HANDLE mpq = NULL;
@@ -95,7 +95,7 @@ void extract_files()
 		SFileCloseArchive(mpq);
 }
 
-void _process_file(std::filesystem::path const& path)
+void _process_file(std::filesystem::path const& path, bool load_skins)
 {
 		fs::path dir = path.parent_path();
 		std::string filename = path.filename().string();
@@ -108,7 +108,7 @@ void _process_file(std::filesystem::path const& path)
 
 		File<M2Header> header = File<M2Header>(path);
 		std::vector<File<M2SkinHeader>> skins;
-		if (LOAD_SKINS)
+		if (load_skins)
 		{
 				for (fs::path skin : skin_paths)
 				{
@@ -118,16 +118,36 @@ void _process_file(std::filesystem::path const& path)
 						}
 				}
 		}
-		process_file(header, skins);
+
+		// don't multithread this, ifstreams can be read by scripts
+		for (M2Script* script : SCRIPTS)
+		{
+				script->process(header, skins);
+		}
 }
 
 void process_files()
 {
-		uint32_t fileCount = 0;
-		uint64_t start = now();
-
 		thread_pool pool;
+		uint32_t fileCount = 0;
 
+		bool multithread = true;
+		bool load_skins = false;
+
+		for (M2Script* script : SCRIPTS)
+		{
+				if (!(script->flags() & M2ScriptFlags::USE_THREADS))
+				{
+						multithread = false;
+				}
+
+				if (script->flags() & M2ScriptFlags::LOAD_SKINS)
+				{
+						load_skins = true;
+				}
+		}
+
+		uint64_t start = now();
 		for (const fs::directory_entry& dir_entry :
 				fs::recursive_directory_iterator(EXTRACTS_PATH))
 		{
@@ -137,17 +157,22 @@ void process_files()
 						continue;
 				}
 				fileCount++;
-				if (USE_THREADS)
+
+				if (multithread)
 				{
-						pool.push_task([path]() { _process_file(path); });
+						pool.push_task([path,load_skins]() { _process_file(path, load_skins); });
 				}
 				else
 				{
-						_process_file(path);
+						_process_file(path, load_skins);
 				}
 		}
-		pool.wait_for_tasks();
-		finish(fileCount, now() - start);
+
+		for (M2Script* script : SCRIPTS)
+		{
+				script->finish(fileCount);
+		}
+		std::cout << "Processed " << fileCount << " m2 files in " << now() - start << "ms\n";
 }
 
 int main()
