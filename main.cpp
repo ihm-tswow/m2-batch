@@ -170,6 +170,8 @@ void process_files()
 				}
 		}
 
+		pool.wait_for_tasks();
+
 		for (M2Script* script : SCRIPTS)
 		{
 				script->finish(fileCount);
