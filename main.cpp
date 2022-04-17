@@ -141,7 +141,7 @@ void process_files()
 						multithread = false;
 				}
 
-				if (script->flags() & M2ScriptFlags::LOAD_SKINS)
+				if (!(script->flags() & M2ScriptFlags::SKIP_SKINS))
 				{
 						load_skins = true;
 				}

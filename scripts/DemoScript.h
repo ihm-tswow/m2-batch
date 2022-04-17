@@ -7,7 +7,7 @@ class DemoScript : public M2Script
     {
         return 0
             | M2ScriptFlags::USE_THREADS
-            | M2ScriptFlags::LOAD_SKINS
+            | M2ScriptFlags::SKIP_SKINS
         ;
     }
 

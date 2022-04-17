@@ -11,7 +11,7 @@
 
 enum M2ScriptFlags
 {
-    LOAD_SKINS = 0x1,
+    SKIP_SKINS = 0x1,
     USE_THREADS = 0x2
 };
 
