@@ -1,4 +1,5 @@
-#include "scripts/DemoScript.h"
+#include "scripts/CameraFinder.h"
+#include "scripts/YourScript.h"
 #include "script.h"
 
 // The client to extract m2/skins from
@@ -9,5 +10,5 @@
 
 // What scripts to execute when running the program
 M2Script* SCRIPTS[] = {
-    new DemoScript()
+    new YourScript(),
 };

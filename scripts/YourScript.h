@@ -3,7 +3,7 @@
 #include "script.h"
 #include <mutex>
 
-class DemoScript : public M2Script
+class YourScript : public M2Script
 {
     uint32_t flags()
     {
@@ -13,19 +13,10 @@ class DemoScript : public M2Script
         ;
     }
 
-    std::mutex camera_lock;
-    int camera_count = 0;
-
     void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins) override {
-        if (m2.value.cameras.count > 0)
-        {
-            std::cout << "Found camera: " << m2.filename << "\n";
-            std::scoped_lock(camera_lock);
-            camera_count++;
-        }
     };
 
     void finish(uint32_t fileCount) override {
-        std::cout << "Found " << camera_count << " cameras\n";
+        std::cout << "Your script just finished processing " << fileCount << " files\n";
     };
 };
