@@ -101,12 +101,14 @@ void _process_file(std::filesystem::path const& path, bool load_skins)
 		std::string filename = path.filename().string();
 		std::string plain_filename = filename.substr(0, filename.size() - 3);
 
+		fs::path rel_dir = std::filesystem::relative(dir, EXTRACTS_PATH);
+
 		fs::path skin_paths[] = {
 				dir / (plain_filename + "00.skin"),
 				dir / (plain_filename + "01.skin"),
 		};
 
-		File<M2Header> header = File<M2Header>(path);
+		File<M2Header> header = File<M2Header>(path,rel_dir/filename);
 		std::vector<File<M2SkinHeader>> skins;
 		if (load_skins)
 		{
@@ -114,7 +116,7 @@ void _process_file(std::filesystem::path const& path, bool load_skins)
 				{
 						if (fs::exists(skin))
 						{
-								skins.push_back(skin);
+								skins.push_back(File<M2SkinHeader>(path,rel_dir/skin.filename()));
 						}
 				}
 		}

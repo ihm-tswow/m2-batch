@@ -1,3 +1,5 @@
+#pragma once
+
 #include "script.h"
 #include <mutex>
 
@@ -17,6 +19,7 @@ class DemoScript : public M2Script
     void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins) override {
         if (m2.value.cameras.count > 0)
         {
+            std::cout << "Found camera: " << m2.filename << "\n";
             std::scoped_lock(camera_lock);
             camera_count++;
         }
