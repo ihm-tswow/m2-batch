@@ -186,4 +186,8 @@ int main()
 				extract_files();
 		}
 		process_files();
+		for (M2Script* script : SCRIPTS)
+		{
+				delete script;
+		}
 }
