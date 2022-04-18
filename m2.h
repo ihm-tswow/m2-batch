@@ -90,7 +90,6 @@ struct M2Bounds
     float radius;
 };
 
-#include <iostream>
 template <typename T>
 struct M2Array
 {
