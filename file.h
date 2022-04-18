@@ -15,7 +15,7 @@ struct File
     T header;
     File() = default;
     File(fs::path file, fs::path filename)
-        : stream(std::ifstream(file))
+        : stream(std::ifstream(file, std::ios::binary))
         , path(filename.string())
     {
         stream.read(reinterpret_cast<char*>(&header), sizeof(T));
