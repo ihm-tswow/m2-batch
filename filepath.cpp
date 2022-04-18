@@ -44,7 +44,7 @@ bool filepath::match(std::regex const& regex)
     return std::regex_match(_filepath, regex);
 }
 
-uint32_t filepath::size()
+size_t filepath::size()
 {
     return _filepath.size();
 }

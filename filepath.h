@@ -16,6 +16,6 @@ public:
     bool starts_with(std::string const& start);
     bool contains(std::string const& match);
     bool match(std::regex const& regex);
-    uint32_t size();
+    size_t size();
     friend std::ostream& operator<<(std::ostream& os, const filepath& dt);
 };
