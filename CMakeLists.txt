@@ -16,7 +16,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(thread-pool storm)
 
 file(GLOB SCRIPTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.h)
-add_executable(m2-batch README.md m2.h m2.cpp skin.h skin.cpp script.h file.h config.h main.cpp ${SCRIPTS})
+add_executable(m2-batch README.md m2.h m2.cpp skin.h skin.cpp script.h file.h filepath.h filepath.cpp config.h main.cpp ${SCRIPTS})
 target_include_directories(m2-batch PRIVATE ${thread-pool_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_features(m2-batch PRIVATE cxx_std_20)
 target_link_libraries(m2-batch storm)
