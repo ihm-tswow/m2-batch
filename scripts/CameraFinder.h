@@ -17,7 +17,7 @@ class CameraFinder : public M2Script
     int camera_count = 0;
 
     void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins) override {
-        if (m2.value.cameras.count > 0)
+        if (m2.header.cameras.count > 0)
         {
             std::cout << "Found camera: " << m2.path << "\n";
             std::scoped_lock(camera_lock);

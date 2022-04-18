@@ -12,12 +12,12 @@ struct File
 {
     std::ifstream stream;
     filepath path;
-    T value;
+    T header;
     File() = default;
     File(fs::path file, fs::path filename)
         : stream(std::ifstream(file))
         , path(filename.string())
     {
-        stream.read(reinterpret_cast<char*>(&value), sizeof(T));
+        stream.read(reinterpret_cast<char*>(&header), sizeof(T));
     }
 };
