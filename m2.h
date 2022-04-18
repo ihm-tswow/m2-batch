@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "file.h"
+
 #include <cstdint>
 #include <fstream>
 #include <vector>
@@ -58,7 +60,16 @@ struct M2String
 {
     uint32_t char_count;
     uint32_t ofs_chars;
-    std::string read(std::ifstream& reader);
+    template <typename T>
+    std::string read(File<T> file)
+    {
+        file.stream.seekg(ofs_chars, std::ios::beg);
+        std::string str;
+        std::copy_n(std::istreambuf_iterator<char>(file.stream.rdbuf()),
+            char_count, std::back_inserter(str));
+        return str;
+    }
+
 };
 
 struct M2Range
@@ -86,13 +97,14 @@ struct M2Array
     uint32_t count;
     uint32_t offset;
 
-    std::vector<T> read(std::ifstream& stream)
+    template <typename G>
+    std::vector<T> read(File<G> & file)
     {
         std::vector<T> vec(count);
-        stream.seekg(offset, std::ios::beg);
+        file.stream.seekg(offset, std::ios::beg);
         for (size_t i = 0; i < count; ++i)
         {
-            stream.read(reinterpret_cast<char*>(&vec[i]),sizeof(T));
+            file.stream.read(reinterpret_cast<char*>(&vec[i]),sizeof(T));
         }
         return vec;
     }
