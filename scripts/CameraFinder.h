@@ -16,16 +16,16 @@ class CameraFinder : public M2Script
     std::mutex camera_lock;
     int camera_count = 0;
 
-    void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins) override {
+    void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins, synced_stream & stream) override {
         if (m2.header.cameras.count > 0)
         {
-            std::cout << "Found camera: " << m2.path << "\n";
+            stream.println("Found camera", m2.path);
             std::scoped_lock(camera_lock);
             camera_count++;
         }
     };
 
-    void finish(uint32_t fileCount) override {
-        std::cout << "Found " << camera_count << " cameras\n";
+    void finish(uint32_t fileCount, synced_stream & stream) override {
+        stream.println("Found", camera_count, "cameras");
     };
 };

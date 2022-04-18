@@ -95,7 +95,7 @@ void extract_files()
 		SFileCloseArchive(mpq);
 }
 
-void _process_file(std::filesystem::path const& path, bool load_skins)
+void _process_file(std::filesystem::path const& path, bool load_skins, synced_stream& stream)
 {
 		fs::path dir = path.parent_path();
 		std::string filename = path.filename().string();
@@ -124,12 +124,13 @@ void _process_file(std::filesystem::path const& path, bool load_skins)
 		// don't multithread this, ifstreams can be read by scripts
 		for (M2Script* script : SCRIPTS)
 		{
-				script->process(header, skins);
+				script->process(header, skins, stream);
 		}
 }
 
 void process_files()
 {
+		synced_stream stream;
 		thread_pool pool;
 		uint32_t fileCount = 0;
 
@@ -162,11 +163,11 @@ void process_files()
 
 				if (multithread)
 				{
-						pool.push_task([path,load_skins]() { _process_file(path, load_skins); });
+						pool.push_task([path,load_skins,&stream]() { _process_file(path, load_skins, stream); });
 				}
 				else
 				{
-						_process_file(path, load_skins);
+						_process_file(path, load_skins, stream);
 				}
 		}
 
@@ -174,7 +175,7 @@ void process_files()
 
 		for (M2Script* script : SCRIPTS)
 		{
-				script->finish(fileCount);
+				script->finish(fileCount, stream);
 		}
 		std::cout << "Processed " << fileCount << " m2 files in " << now() - start << "ms\n";
 }

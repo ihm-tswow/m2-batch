@@ -13,10 +13,10 @@ class YourScript : public M2Script
         ;
     }
 
-    void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins) override {
+    void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins, synced_stream& stream) override {
     };
 
-    void finish(uint32_t fileCount) override {
-        std::cout << "Your script just finished processing " << fileCount << " files\n";
+    void finish(uint32_t fileCount, synced_stream& stream) override {
+        stream.println("Your script just finished processing ", fileCount , "files");
     };
 };
