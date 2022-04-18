@@ -95,6 +95,18 @@ void extract_files()
 		SFileCloseArchive(mpq);
 }
 
+M2Errors process_skin(std::vector<File<M2SkinHeader>> & skins, fs::path dir, fs::path rel_dir, std::string const& filename, M2Errors error)
+{
+		fs::path path = dir / filename;
+		if (fs::exists(path))
+		{
+				skins.push_back(File<M2SkinHeader>(path, rel_dir / filename));
+				File<M2SkinHeader>& header = (skins[skins.size() - 1]);
+				return header.stream.good() ? M2Errors::SUCCESS : error;
+		}
+		return M2Errors::SUCCESS;
+}
+
 void _process_file(std::filesystem::path const& path, bool load_skins, synced_stream& stream)
 {
 		fs::path dir = path.parent_path();
@@ -103,29 +115,36 @@ void _process_file(std::filesystem::path const& path, bool load_skins, synced_st
 
 		fs::path rel_dir = std::filesystem::relative(dir, EXTRACTS_PATH);
 
-		fs::path skin_paths[] = {
-				dir / (plain_filename + "00.skin"),
-				dir / (plain_filename + "01.skin"),
-		};
-
+		uint32_t errors = M2Errors::SUCCESS;
 		File<M2Header> header = File<M2Header>(path,rel_dir/filename);
+		if (!header.stream.good())
+		{
+				errors |= M2Errors::BAD_M2;
+		}
+
 		std::vector<File<M2SkinHeader>> skins;
 		if (load_skins)
 		{
-				for (fs::path skin : skin_paths)
+				errors |= process_skin(skins, dir, rel_dir, plain_filename+"00.skin", M2Errors::BAD_SKIN_00);
+				errors |= process_skin(skins, dir, rel_dir, plain_filename+"01.skin", M2Errors::BAD_SKIN_01);
+		}
+
+		if (errors != M2Errors::SUCCESS)
+		{
+				for (M2Script* script : SCRIPTS)
 				{
-						if (fs::exists(skin))
-						{
-								skins.push_back(File<M2SkinHeader>(path,rel_dir/skin.filename()));
-						}
+						script->process_bad(header, skins, errors, stream);
+				}
+		}
+		else
+		{
+				// don't multithread this, ifstreams can be read by scripts
+				for (M2Script* script : SCRIPTS)
+				{
+						script->process(header, skins, stream);
 				}
 		}
 
-		// don't multithread this, ifstreams can be read by scripts
-		for (M2Script* script : SCRIPTS)
-		{
-				script->process(header, skins, stream);
-		}
 }
 
 void process_files()
