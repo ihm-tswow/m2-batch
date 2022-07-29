@@ -10,6 +10,7 @@
 #include <iostream>
 #include <filesystem>
 #include <chrono>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 
@@ -19,8 +20,10 @@ uint64_t now()
 				(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 }
 
-bool should_extract(std::string const& name)
+bool should_extract(std::string name)
 {
+		std::transform(name.begin(), name.end(), name.begin(),
+				[](unsigned char c) { return std::tolower(c); });
 		return name.ends_with(".m2") || name.ends_with(".skin");
 }
 
