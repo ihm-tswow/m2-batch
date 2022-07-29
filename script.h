@@ -29,7 +29,7 @@ enum M2Errors
 struct M2Script
 {
     virtual uint32_t flags() = 0;
-    virtual void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins, synced_stream& stream) {};
-    virtual void process_bad(File<M2Header>& m2, std::vector<File<M2SkinHeader>> const& skins, uint32_t errors, synced_stream& stream) {};
+    virtual void process(File<M2Header>& m2, std::vector<File<M2SkinHeader>> & skins, synced_stream& stream) {};
+    virtual void process_bad(File<M2Header>& m2, std::vector<File<M2SkinHeader>> & skins, uint32_t errors, synced_stream& stream) {};
     virtual void finish(uint32_t fileCount, synced_stream& stream) {};
 };

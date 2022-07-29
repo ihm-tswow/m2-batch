@@ -61,7 +61,7 @@ struct M2String
     uint32_t char_count;
     uint32_t ofs_chars;
     template <typename T>
-    std::string read(File<T> file)
+    std::string read(File<T>& file)
     {
         file.stream.seekg(ofs_chars, std::ios::beg);
         std::string str;
@@ -277,8 +277,8 @@ struct M2Particle
     Vec3D<float> position;
     uint16_t bone;
     uint16_t texture;
-    M2Array<int8_t> geometry_model_filename;
-    M2Array<int8_t> recursion_model_filename;
+    M2String geometry_model_filename;
+    M2String recursion_model_filename;
     uint8_t blending_type;
     uint8_t emitter_type;
     uint16_t particle_color_index;
@@ -325,7 +325,6 @@ struct M2Particle
     } follow[2];
     M2Array<Vec3D<float>> spline_points;
     M2Track<uint8_t> enabled_in;
-    Vec2D<uint16_t> multi_texture_param[2];
 };
 
 struct M2Header
