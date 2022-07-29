@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.11)
 FetchContent_Declare(
   thread-pool
   GIT_REPOSITORY https://github.com/bshoshany/thread-pool.git
-  GIT_TAG        b6cd773f37b1be7718f771ae7403726a28be5f40
+  GIT_TAG        737c6036103ac034682ee11c31634ebe6769781f
 )
 FetchContent_Declare(
   storm
