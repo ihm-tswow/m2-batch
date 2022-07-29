@@ -33,7 +33,7 @@ The first time you run the program, it will extract all .m2 and .skin files from
 
 ### Scripting
 
-Scripts are defined as classes that inherit from `M2Script`. A basic script skeleton is defined in a header file inside the `scripts` directory as follows:
+Scripts are defined as classes that inherit from `M2Script`. A basic script skeleton is defined in a header file inside the `scripts` directory as follows (you can directly edit the `YourScript.h` example to quickly get started):
 
 ```c++
 #pragma once
